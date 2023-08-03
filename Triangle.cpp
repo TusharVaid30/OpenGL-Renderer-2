@@ -1,11 +1,12 @@
 #include "Triangle.h"
 
+void Triangle::SetMaterial(Material* _mat)
+{
+	mat = _mat;
+}
+
 Triangle::Triangle()
 {
-	shader = new Shader("vertex.shader", "fragment.shader");
-
-	Texture* tex = new Texture();
-
 	float vertices[] =
 	{
 		0.5f,  0.5f, 0.0f,		1.0f, 1.0f,
@@ -39,14 +40,20 @@ Triangle::Triangle()
 
 void Triangle::Draw()
 {
+	shader = mat->shader;
+	texture = mat->tex;
+
 	shader->Use();
+
 	glBindVertexArray(VAO);
-	GLuint transformLoc = glGetUniformLocation(shader->GetID(), "transform");
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(position));
+
+	GLuint modelLoc = glGetUniformLocation(shader->GetID(), "model");
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void Triangle::Translate(glm::vec3 newPosition)
 {
-	position = glm::translate(position, newPosition);
+	model = glm::translate(model, newPosition);
 }
